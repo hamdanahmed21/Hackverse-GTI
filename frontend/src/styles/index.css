@@ -1,3 +1,0 @@
-/* Global styles — extend with your design system */
-*, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, sans-serif; }
