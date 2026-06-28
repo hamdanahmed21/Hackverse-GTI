@@ -1,0 +1,177 @@
+/*
+ * TranscriptPanel.css
+ * AI Meeting Watchdog — Transcript Panel Styles
+ *
+ * BEM structure:
+ *   .transcript-panel              — root container (fixed height, dark bg)
+ *   .transcript-panel__scroll      — inner scrollable area
+ *   .transcript-panel__row         — one committed utterance row
+ *   .transcript-panel__row--flagged — contradiction-flagged row modifier
+ *   .transcript-panel__ts          — monospace timestamp cell (left)
+ *   .transcript-panel__text        — utterance text (right, flex: 1)
+ *   .transcript-panel__live        — interim live row (bottom, italic)
+ *   .transcript-panel__live-text   — live text + cursor wrapper
+ *   .transcript-panel__cursor      — blinking "|" at end of live line
+ *   .transcript-panel__empty       — centred placeholder when no content
+ *
+ * Flagged row animation:
+ *   flagged-bar-slam — left border snaps from 0 → 2px in 80ms.
+ *   Defined here independently of AlertCard.css (no cross-file dependency).
+ */
+
+/* ── Root ───────────────────────────────────────────────────────────────── */
+
+.transcript-panel {
+  background: #0d0d0d;
+  border-radius: 10px;
+  border: 1px solid #1a1a1a;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 420px;        /* fixed height — content scrolls inside */
+}
+
+/* ── Scrollable inner ───────────────────────────────────────────────────── */
+
+.transcript-panel__scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Thin custom scrollbar — visible but unobtrusive */
+  scrollbar-width: thin;
+  scrollbar-color: #222 #0d0d0d;
+}
+
+.transcript-panel__scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.transcript-panel__scroll::-webkit-scrollbar-track {
+  background: #0d0d0d;
+}
+
+.transcript-panel__scroll::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 2px;
+}
+
+/* ── Committed row ──────────────────────────────────────────────────────── */
+
+.transcript-panel__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #1a1a1a;
+  /* Reserve space for left border — keeps text from jumping on flag */
+  border-left: 2px solid transparent;
+  transition: background 200ms ease;
+}
+
+/* ── Flagged row modifier ───────────────────────────────────────────────── */
+
+.transcript-panel__row--flagged {
+  background: rgba(226, 75, 74, 0.07);
+  /* Left bar starts at 0 and slams to 2px — see animation below */
+  border-left: 2px solid #e24b4a;
+  border-left-width: 0;
+  animation: tp-bar-slam 80ms ease forwards;
+}
+
+.transcript-panel__row--flagged .transcript-panel__text {
+  color: #ff8080;
+}
+
+@keyframes tp-bar-slam {
+  from { border-left-width: 0; }
+  to   { border-left-width: 2px; }
+}
+
+/* ── Timestamp cell ─────────────────────────────────────────────────────── */
+
+.transcript-panel__ts {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: #555;
+  width: 44px;
+  flex-shrink: 0;
+  padding-top: 2px;    /* optical alignment with text baseline */
+  user-select: none;
+}
+
+/* ── Text cell ──────────────────────────────────────────────────────────── */
+
+.transcript-panel__text {
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  color: #ccc;
+  line-height: 1.7;
+  flex: 1;
+  word-break: break-word;
+}
+
+/* ── Live interim row ───────────────────────────────────────────────────── */
+
+.transcript-panel__live {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #1a1a1a;
+  border-left: 2px solid transparent; /* match committed row alignment */
+}
+
+.transcript-panel__live-text {
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  color: #666;           /* dimmer than committed text — not final yet */
+  line-height: 1.7;
+  flex: 1;
+  font-style: italic;
+  word-break: break-word;
+}
+
+/* ── Blinking cursor ────────────────────────────────────────────────────── */
+
+.transcript-panel__cursor {
+  display: inline-block;
+  color: #e24b4a;
+  margin-left: 1px;
+  animation: tp-cursor-blink 1s step-end infinite;
+  user-select: none;
+}
+
+@keyframes tp-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── Empty state ────────────────────────────────────────────────────────── */
+
+.transcript-panel__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: #333;
+  user-select: none;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .transcript-panel__cursor {
+    animation: none;
+    opacity: 1;
+  }
+
+  .transcript-panel__row--flagged {
+    animation: none;
+    border-left-width: 2px;
+  }
+}
