@@ -1,0 +1,117 @@
+/*
+ * WaveformBars.css
+ * AI Meeting Watchdog — Waveform Visualiser Styles
+ *
+ * Three states driven by BEM modifier on the root:
+ *   .waveform-bars--idle        bars resting, muted
+ *   .waveform-bars--recording   bars animate via JS, red fill, orb pulses
+ *   .waveform-bars--alert       bars switch orange, amplitude ceiling lifts
+ *
+ * Bar heights are written directly to style.height by the rAF loop in
+ * WaveformBars.jsx — CSS only handles colour, transitions, and layout.
+ * This keeps the animation off the React reconciler entirely.
+ */
+
+/* ── Root container ─────────────────────────────────────────────────────── */
+
+.waveform-bars {
+  position: relative;
+  display: flex;
+  align-items: center;       /* bars grow from vertical centre */
+  justify-content: center;
+  gap: 3px;
+  height: 64px;              /* fixed container — bars grow inside this */
+  width: 100%;
+  max-width: 280px;
+}
+
+/* ── Individual bar ─────────────────────────────────────────────────────── */
+
+.waveform-bars__bar {
+  display: block;
+  width: 3px;
+  min-height: 3px;
+  border-radius: 2px;
+  /* Colour transition only — height is controlled by JS, not CSS,
+     so we deliberately do NOT transition height to avoid lag */
+  transition: background-color 300ms ease, opacity 200ms ease;
+  will-change: height;       /* hint browser to promote to compositor layer */
+  transform-origin: center;
+}
+
+/* ── Idle state ─────────────────────────────────────────────────────────── */
+
+.waveform-bars--idle .waveform-bars__bar {
+  background-color: var(--border-strong);
+  opacity: 0.5;
+}
+
+/* ── Recording state ────────────────────────────────────────────────────── */
+
+.waveform-bars--recording .waveform-bars__bar {
+  background-color: #e24b4a;  /* c-red-400 — matches Lusion red accent */
+  opacity: 1;
+}
+
+/* ── Alert/contradiction state ──────────────────────────────────────────── */
+
+.waveform-bars--alert .waveform-bars__bar {
+  background-color: #ef9f27;  /* c-amber-400 — orange shift signals danger */
+  opacity: 1;
+}
+
+/* ── Pulse orb ──────────────────────────────────────────────────────────── */
+/*
+ * Small dot to the right of the bars — visible only while recording/alert.
+ * Indicates live mic state at a glance, without needing a label.
+ */
+
+.waveform-bars__orb {
+  display: block;
+  position: absolute;
+  right: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #e24b4a;
+  opacity: 0;
+  transition: opacity 200ms ease, background-color 300ms ease;
+  pointer-events: none;
+}
+
+.waveform-bars--recording .waveform-bars__orb,
+.waveform-bars--alert .waveform-bars__orb {
+  opacity: 1;
+  animation: wf-orb-pulse 1.2s ease-in-out infinite;
+}
+
+.waveform-bars--alert .waveform-bars__orb {
+  background-color: #ef9f27;
+  animation-duration: 0.7s;  /* faster pulse during alert = more urgency */
+}
+
+@keyframes wf-orb-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(226, 75, 74, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(226, 75, 74, 0);
+  }
+}
+
+/* ── Reduced motion override ────────────────────────────────────────────── */
+/*
+ * prefers-reduced-motion: bar heights still update (JS handles that check),
+ * but orb animation is disabled entirely.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  .waveform-bars__orb {
+    animation: none !important;
+  }
+  .waveform-bars__bar {
+    transition: none;
+  }
+}
