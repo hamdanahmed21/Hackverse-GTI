@@ -1,0 +1,245 @@
+/*
+ * AlertCard.css
+ * AI Meeting Watchdog — Contradiction Alert Styles
+ *
+ * Three signature animation moments:
+ *   1. Card entrance  — translateY(10px) → 0 + opacity 0 → 1 (200ms)
+ *   2. Shockwave ring — expands from card centre, fades out (600ms)
+ *   3. Page border    — [data-alert="active"] on <body> triggers red bleed (600ms)
+ *
+ * Card exit (dismiss) uses alert-card--exiting modifier (200ms out).
+ *
+ * Dark terminal aesthetic — near-black bg, red border, monospace type —
+ * chosen to feel like a system interrupt, not a toast notification.
+ */
+
+/* ── Root card ─────────────────────────────────────────────────────────── */
+
+.alert-card {
+  position: relative;
+  overflow: hidden;             /* contain the shockwave ring */
+
+  background: #0d0d0d;
+  border: 1px solid #e24b4a;
+  border-radius: 10px;
+  padding: 16px 18px;
+
+  /* Entrance animation */
+  animation: alert-enter 200ms ease forwards;
+}
+
+@keyframes alert-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Exit state (dismiss triggered) ───────────────────────────────────── */
+
+.alert-card--exiting {
+  animation: alert-exit 250ms ease forwards;
+}
+
+@keyframes alert-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+/* ── Shockwave ring ─────────────────────────────────────────────────────── */
+/*
+ * Absolutely centred inside the card.
+ * Starts at 0×0, expands to 600px diameter, fades out.
+ * Re-triggered by removing + re-adding the --fire modifier (see AlertCard.jsx).
+ */
+
+.alert-card__shockwave {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  border: 1.5px solid #e24b4a;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.alert-card__shockwave--fire {
+  animation: shockwave-expand 600ms ease-out forwards;
+}
+
+@keyframes shockwave-expand {
+  0%   { width: 0;     height: 0;     opacity: 0.85; }
+  100% { width: 600px; height: 600px; opacity: 0;    }
+}
+
+/* ── Page border bleed ──────────────────────────────────────────────────── */
+/*
+ * Applied to <body> via data attribute in AlertCard.jsx.
+ * Uses outline (not border) so it doesn't shift layout.
+ * Cleared after 600ms by the component.
+ */
+
+body[data-alert="active"] {
+  outline: 2px solid #e24b4a;
+  outline-offset: -2px;
+  animation: border-bleed 600ms ease forwards;
+}
+
+@keyframes border-bleed {
+  0%   { outline-color: #e24b4a; }
+  65%  { outline-color: #e24b4a; }
+  100% { outline-color: transparent; }
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
+.alert-card__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.alert-card__badge {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #e24b4a;
+  background: rgba(226, 75, 74, 0.12);
+  border: 1px solid rgba(226, 75, 74, 0.3);
+  border-radius: 4px;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+.alert-card__timestamp {
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  color: #555;
+  margin-left: auto;
+}
+
+/* ── Section wrapper ────────────────────────────────────────────────────── */
+
+.alert-card__section {
+  margin-bottom: 10px;
+}
+
+.alert-card__section-label {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #555;
+  margin: 0 0 4px;
+}
+
+/* ── Flagged statement ──────────────────────────────────────────────────── */
+/*
+ * Left red bar slams in on entrance (animation delay matches card entrance).
+ * blockquote reset — we handle all styling here.
+ */
+
+.alert-card__flagged {
+  margin: 0;
+  font-size: 13px;
+  font-family: var(--font-mono, monospace);
+  color: #ff6b6b;
+  background: rgba(226, 75, 74, 0.08);
+  border-left: 2px solid #e24b4a;
+  border-radius: 0;
+  padding: 8px 12px;
+  line-height: 1.6;
+
+  /* Left bar slams in — starts at 0 width, snaps to 2px */
+  border-left-width: 0;
+  animation: flagged-bar-slam 80ms ease 180ms forwards;
+}
+
+@keyframes flagged-bar-slam {
+  from { border-left-width: 0; }
+  to   { border-left-width: 2px; }
+}
+
+/* ── Conflicting rule ───────────────────────────────────────────────────── */
+
+.alert-card__rule {
+  margin: 0;
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  color: #aaa;
+  line-height: 1.6;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+/* ── Explanation ────────────────────────────────────────────────────────── */
+
+.alert-card__explanation {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: #888;
+  line-height: 1.7;
+  border-top: 1px solid #1a1a1a;
+  padding-top: 10px;
+}
+
+/* ── Dismiss button ─────────────────────────────────────────────────────── */
+
+.alert-card__dismiss {
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.06em;
+  color: #555;
+  background: transparent;
+  border: 1px solid #222;
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.alert-card__dismiss:hover {
+  color: #aaa;
+  border-color: #444;
+}
+
+.alert-card__dismiss:focus-visible {
+  outline: 2px solid #e24b4a;
+  outline-offset: 2px;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .alert-card,
+  .alert-card--exiting,
+  .alert-card__shockwave--fire,
+  .alert-card__flagged,
+  body[data-alert="active"] {
+    animation: none !important;
+  }
+  .alert-card {
+    opacity: 1;
+    transform: none;
+  }
+  .alert-card__flagged {
+    border-left-width: 2px;
+  }
+}
