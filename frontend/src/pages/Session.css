@@ -1,0 +1,344 @@
+/* ─── Reset / base ──────────────────────────────────────────────────────── */
+.session-page {
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #e8e8e8;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+/* ─── Header ────────────────────────────────────────────────────────────── */
+.session-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid #1e1e1e;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #0a0a0a;
+}
+
+.session-page__title {
+  font-family: "JetBrains Mono", "Fira Mono", "Courier New", monospace;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: #e8e8e8;
+  font-weight: 500;
+}
+
+/* ─── Status dot ────────────────────────────────────────────────────────── */
+.session-page__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.session-page__dot--idle {
+  background: #444;
+}
+
+.session-page__dot--listening {
+  background: #22c55e;
+  animation: dot-pulse 1.6s ease-in-out infinite;
+}
+
+.session-page__dot--alert {
+  background: #e24b4a;
+}
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
+  50% { opacity: 0.85; box-shadow: 0 0 0 5px rgba(34, 197, 94, 0); }
+}
+
+/* ─── Error banner ──────────────────────────────────────────────────────── */
+.session-page__error-banner {
+  background: rgba(226, 75, 74, 0.12);
+  border-left: 3px solid #e24b4a;
+  color: #e24b4a;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  padding: 10px 24px;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Upload strip ──────────────────────────────────────────────────────── */
+.session-page__upload-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  border-bottom: 1px solid #1a1a1a;
+  flex-wrap: wrap;
+}
+
+.session-page__file-input {
+  flex: 1;
+  min-width: 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: #777;
+  background: transparent;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.session-page__file-input:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.session-page__file-input::file-selector-button {
+  background: #1a1a1a;
+  color: #aaa;
+  border: none;
+  border-radius: 3px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+.session-page__btn {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  padding: 7px 16px;
+  border: 1px solid #2e2e2e;
+  border-radius: 4px;
+  background: #111;
+  color: #aaa;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.session-page__btn:hover:not(:disabled) {
+  border-color: #555;
+  color: #e8e8e8;
+}
+
+.session-page__btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.session-page__btn--primary {
+  border-color: #22c55e;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.session-page__btn--primary:hover:not(:disabled) {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  border-color: #4ade80;
+}
+
+.session-page__btn--danger {
+  border-color: #e24b4a;
+  color: #e24b4a;
+  background: rgba(226, 75, 74, 0.06);
+}
+
+.session-page__btn--danger:hover:not(:disabled) {
+  background: rgba(226, 75, 74, 0.12);
+  color: #f87171;
+  border-color: #f87171;
+}
+
+/* ─── Two-column grid ───────────────────────────────────────────────────── */
+.session-page__grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 24px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 24px auto;
+  padding: 0 24px;
+  flex: 1;
+  align-items: start;
+}
+
+/* ─── Left column ───────────────────────────────────────────────────────── */
+.session-page__left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.session-page__mic-row {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0 8px;
+}
+
+/* ─── Paste fallback ────────────────────────────────────────────────────── */
+.session-page__paste-fallback {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+}
+
+.session-page__paste-notice {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.session-page__paste-area {
+  background: #0d0d0d;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  color: #ccc;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 10px 12px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.session-page__paste-area:focus {
+  border-color: #444;
+}
+
+.session-page__paste-area::placeholder {
+  color: #333;
+}
+
+/* ─── Right column ──────────────────────────────────────────────────────── */
+.session-page__right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 60px;
+}
+
+/* ─── Policy panel ──────────────────────────────────────────────────────── */
+.session-page__policy {
+  background: #0e0e0e;
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 16px;
+  max-height: 420px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a2a transparent;
+}
+
+.session-page__policy::-webkit-scrollbar {
+  width: 4px;
+}
+
+.session-page__policy::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 2px;
+}
+
+.session-page__policy-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #444;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+}
+
+.session-page__policy-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.session-page__policy-item {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.35);
+  padding: 8px 10px;
+  border-left: 2px solid #1e1e1e;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.session-page__policy-item:hover {
+  border-left-color: #333;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ─── Analysing indicator ───────────────────────────────────────────────── */
+.session-page__analysing {
+  position: fixed;
+  bottom: 18px;
+  right: 20px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: #444;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .session-page__grid {
+    grid-template-columns: 1fr;
+    margin: 16px auto;
+    padding: 0 16px;
+    gap: 16px;
+  }
+
+  .session-page__right {
+    position: static;
+  }
+
+  .session-page__policy {
+    max-height: 240px;
+  }
+
+  .session-page__upload-strip {
+    padding: 12px 16px;
+  }
+
+  .session-page__header {
+    padding: 12px 16px;
+  }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .session-page__dot--listening {
+    animation: none;
+  }
+  .session-page__analysing {
+    animation: none;
+    opacity: 0.6;
+  }
+}
